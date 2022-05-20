@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 var bodyparser = require('body-parser');
 const UrlRouter = require('./routes/router');
+const rateLimit = require("express-rate-limit");
 const dotenv = require('dotenv')
 dotenv.config({path:'.env'});
 app.use((req, res, next) => {
@@ -12,8 +13,16 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: false }))
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }))
+app.use(
+    rateLimit({
+      windowMs:1000, 
+      max: 5,
+      message: "You exceeded 5 requests in 1 second limit!",
+      headers: true,
+    })
+  );
 //*****Routes*********//
 app.use('/api',UrlRouter)
 

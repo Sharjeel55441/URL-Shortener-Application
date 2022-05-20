@@ -2,10 +2,8 @@ const UrlModel = require('../model/shortUrl');
 
 exports.postUrl=async(req,res,next) =>{
     try{
-    let fullUrl = req.body.fullUrl;
-        console.log("Check Body:",fullUrl);
+    let fullUrl = req.body;
         let postUrl = await UrlModel.create(fullUrl);
-        console.log('Check Controller:',postUrl);
         if(postUrl) {
             return res.status(200).json({
                 message:"URL Post Successfully....",
@@ -23,4 +21,26 @@ exports.postUrl=async(req,res,next) =>{
     }catch(error) {
         console.log("==============Url Creating Error=================",error);
     }
+};
+exports.getShortUrl = async (req,res,next) => {
+try{
+    let url = req.params._id;
+    const shortUrl = await UrlModel.fetchByUrl(url);
+    if (shortUrl) {
+        return res.status(200).json({
+            message:'Short URL Fetched Successfully....',
+            hasError:false,
+            result:shortUrl
+        })
+    }else {
+        return res.status(400).json({
+            message:'Short URL Not Fetched.....!',
+            hasError:true,
+            result:{}
+        })
+    }
+}catch(error) {
+    console.log("============Short Url fetch by id error================",error);
+    next();
+}
 }
